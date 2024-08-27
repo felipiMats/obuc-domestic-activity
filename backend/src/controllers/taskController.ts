@@ -3,8 +3,8 @@ import { addTask, modifyTask, fetchTasks, fetchTaskById, removeTask } from '../s
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { name, userId, description } = req.body;
-    await addTask({ name, userId, description });
+    const { name, userName, description } = req.body;
+    await addTask({ name, userName, description });
     res.status(201).json({ message: 'Task created' });
   } catch (error) {
     res.status(400).json({ message: error instanceof Error ? error.message : 'An unknown error occurred' });
@@ -14,8 +14,8 @@ export const createTask = async (req: Request, res: Response) => {
 export const updateTask = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, userId, description, status } = req.body;
-    await modifyTask(Number(id), { name, userId, description, status });
+    const { name, userName, description, status } = req.body;
+    await modifyTask(Number(id), { name, userName, description, status });
     res.json({ message: 'Task updated' });
   } catch (error) {
     res.status(400).json({ message: error instanceof Error ? error.message : 'An unknown error occurred' });

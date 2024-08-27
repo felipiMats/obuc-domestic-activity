@@ -1,23 +1,16 @@
+import { TaskDTO } from '../dtos/TaskDTO';
 import { db } from '../utils/database';
 
-export interface Task {
-  id?: number;
-  name: string;
-  userId: number;
-  description: string;
-  status?: 'não iniciada' | 'em andamento' | 'concluída';
-}
-
-export const createTask = async (task: Task) => {
-  const { name, userId, description, status = 'não iniciada' } = task;
+export const createTask = async (task: TaskDTO) => {
+  const { name, userName, description, status = 'não iniciada' } = task;
   await (await db).run(
-    'INSERT INTO tasks (name, userId, description, status) VALUES (?, ?, ?, ?)',
-    [name, userId, description, status]
+    'INSERT INTO tasks (name, userName, description, status) VALUES (?, ?, ?, ?)',
+    [name, userName, description, status]
   );
 };
 
-export const updateTask = async (id: number, task: Task) => {
-  const { name, userId, description, status } = task;
+export const updateTask = async (id: number, task: TaskDTO) => {
+  const { name, userName, description, status } = task;
   const existingTask = await (await db).get('SELECT * FROM tasks WHERE id = ?', [id]);
 
   if (existingTask.status === 'concluída') {
@@ -25,8 +18,8 @@ export const updateTask = async (id: number, task: Task) => {
   }
 
   await (await db).run(
-    'UPDATE tasks SET name = ?, userId = ?, description = ?, status = ? WHERE id = ?',
-    [name, userId, description, status, id]
+    'UPDATE tasks SET name = ?, userName = ?, description = ?, status = ? WHERE id = ?',
+    [name, userName, description, status, id]
   );
 };
 

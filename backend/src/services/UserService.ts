@@ -1,7 +1,8 @@
-import { createUser, findUserByEmail, User } from '../models/UserModel';
+import { UserDTO } from '../dtos/UserDTO';
+import { createUser, findUserByEmail } from '../models/UserModel';
 import bcrypt from 'bcryptjs';
 
-export const registerUser = async (user: User) => {
+export const registerUser = async (user: UserDTO) => {
   const existingUser = await findUserByEmail(user.email);
   if (existingUser) {
     throw new Error('User already exists');

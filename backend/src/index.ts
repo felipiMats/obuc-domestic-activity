@@ -23,10 +23,9 @@ const initializeDatabase = async () => {
       CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
-        userId INTEGER,
+        userName TEXT,
         description TEXT,
-        status TEXT CHECK(status IN ('não iniciada', 'em andamento', 'concluída')),
-        FOREIGN KEY(userId) REFERENCES users(id)
+        status TEXT CHECK(status IN ('não iniciada', 'em andamento', 'concluída'))
       );
     `);
     console.log('Database initialized');
@@ -37,11 +36,12 @@ const initializeDatabase = async () => {
 };
 
 const startServer = () => {
-  app.use(userRoutes);
-  app.use(taskRoutes);
+  app.use('/api/v1', userRoutes);
+  app.use('/api/v1', taskRoutes);
 
+  const port = process.env.PORT || 3000;
   app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+    console.log(`Server running on http://localhost:${port}/api/v1`);
   });
 };
 

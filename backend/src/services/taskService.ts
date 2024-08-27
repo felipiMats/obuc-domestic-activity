@@ -1,10 +1,11 @@
-import { Task, createTask, updateTask, getTasks, getTaskById, deleteTask } from '../models/taskModel';
+import { TaskDTO } from '../dtos/TaskDTO';
+import { createTask, updateTask, getTasks, getTaskById, deleteTask } from '../models/taskModel';
 
-export const addTask = async (task: Task) => {
+export const addTask = async (task: TaskDTO) => {
   await createTask(task);
 };
 
-export const modifyTask = async (id: number, task: Task) => {
+export const modifyTask = async (id: number, task: TaskDTO) => {
   await updateTask(id, task);
 };
 
