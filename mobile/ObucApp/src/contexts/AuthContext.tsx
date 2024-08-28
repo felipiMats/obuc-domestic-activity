@@ -8,6 +8,7 @@ export type AuthContextDataProps = {
   user: UserDTO;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signUp: (email: string, name: string, password: string) => Promise<void>;
   isLoadingUserStorageData: boolean; 
 }
 
@@ -77,6 +78,30 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
     }
   }
 
+  async function signUp(email: string, name: string, password: string) {
+    try {
+      const {data} = await api.post(`/register}`, {
+        body: {
+          email,
+          name,
+          password
+        }
+      });
+      const user = data
+
+      if (user.id && user.name) {
+        setIsLoadingUserStorageData(true)
+        await storageUserAndTokenSave(user, user.token)
+        await userAndTokenUpdate(user);
+      }
+    } 
+    catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorageData(false);
+    }
+  }
+
   async function loadUserData() {
     try {
       setIsLoadingUserStorageData(true);
@@ -96,7 +121,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   useEffect(() => {loadUserData()}, [])
 
   return (
-    <AuthContext.Provider value={{user, signIn, signOut, isLoadingUserStorageData}}>
+    <AuthContext.Provider value={{user, signIn, signOut, signUp, isLoadingUserStorageData}}>
       {children}
     </AuthContext.Provider>
   );
