@@ -4,7 +4,6 @@ import { AUTH_TOKEN_STORAGE } from './storageConfig';
 
 type StorageAuthTokenProps = {
   token: string;
-  refresh_token: string;
 }
 
 export async function storageAuthTokenSave(token: string) {

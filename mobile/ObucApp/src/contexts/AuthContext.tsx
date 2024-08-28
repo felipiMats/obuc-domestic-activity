@@ -22,10 +22,10 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   const [user,setUser] = useState<UserDTO>({} as UserDTO)
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true)
 
-  async function userAndTokenUpdate(userData: UserDTO, token='TESTELAVANDERIA') {
+  async function userAndTokenUpdate(userData: UserDTO, token: string) {
     try {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
+      console.info('Token', token)
       setUser(userData)
     } catch (error) {
       throw error;
@@ -43,21 +43,20 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
 
   async function signIn(email: string, password: string) {
     try {
-      const {data} = await api.post(`/login}`, {
-        body: {
-          email,
-          password
-        }
+      const {data} = await api.post(`/login`, {
+        email,
+        password
       });
-      const user = data
 
-      if (user.id && user.name) {
+
+      if (data.user.id && data.user.name) {
         setIsLoadingUserStorageData(true)
-        await storageUserAndTokenSave(user, user.token)
-        await userAndTokenUpdate(user);
+        await storageUserAndTokenSave(data.user, data.token)
+        await userAndTokenUpdate(data.user, data.token);
       }
     } 
     catch (error) {
+      console.error('Error SignIn:', error);
       throw error;
     } finally {
       setIsLoadingUserStorageData(false);
@@ -80,22 +79,19 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
 
   async function signUp(email: string, name: string, password: string) {
     try {
-      const {data} = await api.post(`/register}`, {
-        body: {
-          email,
-          name,
-          password
-        }
+      const { data } = await api.post('/register', {
+        email,
+        name,
+        password
       });
-      const user = data
 
-      if (user.id && user.name) {
+      if (data.user.id && data.user.name) {
         setIsLoadingUserStorageData(true)
-        await storageUserAndTokenSave(user, user.token)
-        await userAndTokenUpdate(user);
+        await storageUserAndTokenSave(data.user, data.token)
+        await userAndTokenUpdate(data.user, data.token);
       }
-    } 
-    catch (error) {
+    } catch (error) {
+      console.error('Error SignUp:', error);
       throw error;
     } finally {
       setIsLoadingUserStorageData(false);

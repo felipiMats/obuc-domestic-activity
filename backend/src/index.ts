@@ -39,9 +39,11 @@ const startServer = () => {
   app.use('/api/v1', userRoutes);
   app.use('/api/v1', taskRoutes);
 
-  const port = process.env.PORT || 3000;
-  app.listen(3000, () => {
-    console.log(`Server running on http://localhost:${port}/api/v1`);
+  const port = parseInt(process.env.PORT || '3000', 10);
+  const hostname = '0.0.0.0';
+
+  app.listen(port, hostname, () => {
+    console.log(`Server running on http://${hostname}:${port}/api/v1`);
   });
 };
 

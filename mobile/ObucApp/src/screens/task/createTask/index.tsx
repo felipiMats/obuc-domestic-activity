@@ -1,58 +1,37 @@
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  TextInput,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
-} from "react-native";
-
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
-
-import { CaretLeft, WarningCircle, X } from "phosphor-react-native";
 import { Button } from "@components/Button";
-
-import { Controller, useForm } from "react-hook-form";
+import { useTask } from "@hooks/TaskContext";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { ArrowLeft, WarningCircle, X } from "phosphor-react-native";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import passwordValidationSchema from "@utils/zod/passwordValidationSchema";
-import { useAuth } from "@hooks/AuthContext";
-
-type RoutesParamsProps = {
-  name: string;
-  email: string;
-};
+import { Controller, useForm } from "react-hook-form";
+import { KeyboardAvoidingView, ScrollView, TouchableOpacity, View, Text, TextInput, Platform } from "react-native";
 
 type FormDataPros = {
-  password: string;
-  confirmPassword: string;
+  name: string;
+  userName: string;
+  description: string;
 };
 
-export function SignUpPassword() {
-  const { signUp } = useAuth();
-
+export function CreateTask() {
   const [isIos, setIsIos] = useState(false);
+  const { createTask } = useTask();
+
+  const [pinError, setPinError] = useState(false);
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  async function handleCreateTask({ name, userName, description }: FormDataPros) {
+    await createTask(name, userName, description);
+    navigation.navigate('home');
+  }
+
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid }
+    formState: { errors, isValid },
   } = useForm<FormDataPros>({
-    resolver: zodResolver(passwordValidationSchema),
     mode: "onChange",
   });
-
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
-
-  const route = useRoute();
-  const { name, email } = route.params as RoutesParamsProps;
-
-  const [pinError, setPinError] = useState(false);
-
-  async function handleCreatePassword({ password }: FormDataPros) {
-    await signUp(email, name, password);
-  }
 
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -60,7 +39,7 @@ export function SignUpPassword() {
     }
   });
 
-  return (
+  return(
     <KeyboardAvoidingView
       enabled={isIos}
       behavior={"padding"}
@@ -75,24 +54,18 @@ export function SignUpPassword() {
             <View className="flex flex-row justify-center items-center">
               <TouchableOpacity
                 onPress={() => {
-                  navigation.goBack();
+                  navigation.navigate('home');
                 }}
               >
-                <CaretLeft weight="bold" size={28} />
+                <ArrowLeft color="#000000" size={32} />
               </TouchableOpacity>
             </View>
 
             <Text className="text-center leading-relaxed text-base text-gray-900 font-outfitRegular">
-              Criar conta
+              Criar Tarefa
             </Text>
 
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("signInHome");
-              }}
-            >
-              <X weight="bold" size={28} />
-            </TouchableOpacity>
+            <View className="w-8" />
           </View>
 
           <View className="flex h-1 w-full -mt-6 justify-center items-center">
@@ -103,17 +76,18 @@ export function SignUpPassword() {
 
           <View className="flex-1 w-full mt-10">
             <Text className="leading-relaxed mt-4 text-xl text-gray-900 font-outfitRegular">
-              Digite sua senha
+              Digite o nome da Tarefa
             </Text>
 
             <View className="flex-row items-center justify-center">
               <Controller
                 control={control}
-                name="password"
+                name="name"
+                rules={{ required: "O nome é obrigatório" }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     className={`flex w-full h-12 mt-4 border-b-2 text-base text-gray-700 ${
-                      errors.password?.message || pinError
+                      errors.name?.message || pinError
                         ? "border-red-400"
                         : "border-gray-200"
                     }`}
@@ -124,35 +98,36 @@ export function SignUpPassword() {
                     autoCapitalize="none"
                     selectionColor="#000000"
                     returnKeyType="send"
-                    onSubmitEditing={handleSubmit(handleCreatePassword)}
+                    onSubmitEditing={handleSubmit(handleCreateTask)}
                   />
                 )}
               />
-              {errors.password?.message && (
-                <View className="-ml-6 mt-8">
+              {errors.name?.message && (
+                <View className="-ml-6 mt-4">
                   <WarningCircle size={24} color="#DD4C45" />
                 </View>
               )}
             </View>
 
-            {errors.password?.message ? (
+            {errors.name?.message ? (
               <Text className="leading-relaxed text-sm text-red-400 font-outfitRegular">
-                {errors.password?.message}
+                {errors.name?.message}
               </Text>
             ) : null}
 
-            <Text className="leading-relaxed mt-8 text-xl text-gray-900 font-outfitRegular">
-              Confirme sua senha
+            <Text className="leading-relaxed mt-4 text-xl text-gray-900 font-outfitRegular">
+              Digite o responsável da Tarefa
             </Text>
 
             <View className="flex-row items-center justify-center">
               <Controller
                 control={control}
-                name="confirmPassword"
+                name="userName"
+                rules={{ required: "O responsável é obrigatório" }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
-                    className={`flex w-full h-12 mt-4 border-b-2 text-base text-gray-700 ${
-                      errors.confirmPassword?.message || pinError
+                    className={`flex w-full h-12 mt-8 border-b-2 text-base text-gray-700 ${
+                      errors.userName?.message || pinError
                         ? "border-red-400"
                         : "border-gray-200"
                     }`}
@@ -163,27 +138,67 @@ export function SignUpPassword() {
                     autoCapitalize="none"
                     selectionColor="#000000"
                     returnKeyType="send"
-                    onSubmitEditing={handleSubmit(handleCreatePassword)}
+                    onSubmitEditing={handleSubmit(handleCreateTask)}
                   />
                 )}
               />
-              {errors.confirmPassword?.message && (
-                <View className="-ml-6 mt-8">
+              {errors.userName?.message && (
+                <View className="-ml-6 mt-4">
                   <WarningCircle size={24} color="#DD4C45" />
                 </View>
               )}
             </View>
 
-            {errors.confirmPassword?.message ? (
+            {errors.userName?.message ? (
               <Text className="leading-relaxed text-sm text-red-400 font-outfitRegular">
-                {errors.confirmPassword?.message}
+                {errors.name?.message}
+              </Text>
+            ) : null}
+
+            <Text className="leading-relaxed mt-4 text-xl text-gray-900 font-outfitRegular">
+              Digite a descrição da Tarefa
+            </Text>
+
+            <View className="flex-row items-center justify-center">
+              <Controller
+                control={control}
+                name="description"
+                rules={{ required: "A descrição é obrigatória" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    className={`flex w-full h-12 mt-4 border-b-2 text-base text-gray-700 ${
+                      errors.description?.message || pinError
+                        ? "border-red-400"
+                        : "border-gray-200"
+                    }`}
+                    onChangeText={(e) => {
+                      onChange(e), setPinError(false);
+                    }}
+                    value={value}
+                    autoCapitalize="none"
+                    selectionColor="#000000"
+                    returnKeyType="send"
+                    onSubmitEditing={handleSubmit(handleCreateTask)}
+                  />
+                )}
+              />
+              {errors.description?.message && (
+                <View className="-ml-6 mt-4">
+                  <WarningCircle size={24} color="#DD4C45" />
+                </View>
+              )}
+            </View>
+
+            {errors.description?.message ? (
+              <Text className="leading-relaxed text-sm text-red-400 font-outfitRegular">
+                {errors.name?.message}
               </Text>
             ) : null}
 
             <View className="flex-1 w-full items-end justify-end mt-4 mb-10 bg-white">
               <Button
                 next
-                onPress={handleSubmit(handleCreatePassword)}
+                onPress={handleSubmit(handleCreateTask)}
                 title="Criar"
                 bg={isValid ? "on" : "off"}
               />
@@ -192,5 +207,5 @@ export function SignUpPassword() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
+  )
 }

@@ -92,7 +92,7 @@ export function SignUpEmail() {
 
           <View className="flex h-1 w-full -mt-6 justify-center items-center">
             <View className="flex h-1 w-36 rounded-3xl bg-gray-200">
-              <View className="flex h-1 w-28 rounded-3xl bg-green-400"></View>
+              <View className="flex h-1 w-20 rounded-3xl bg-green-400"></View>
             </View>
           </View>
 

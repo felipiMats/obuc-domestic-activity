@@ -7,10 +7,10 @@ export const registerUser = async (user: UserDTO) => {
   if (existingUser) {
     throw new Error('User already exists');
   }
-
   const hashedPassword = await bcrypt.hash(user.password, 10);
+  await createUser({ ...user, password: hashedPassword });
 
-  return createUser({ ...user, password: hashedPassword });
+  return findUserByEmail(user.email);
 };
 
 export const loginUser = async (email: string, password: string) => {

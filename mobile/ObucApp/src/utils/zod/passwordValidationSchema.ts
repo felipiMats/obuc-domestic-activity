@@ -1,13 +1,11 @@
 import { object, string } from "zod";
 
 const passwordValidationSchema = object({
-  password: string({
-    required_error: "Informe sua senha.",
-  })
-    .min(6, "Senha inválida. Digite ao menos 6 dígitos")
-    .refine((value) => value.length <= 256, {
-      message: "A senha não pode ter mais de 256 caracteres.",
-    }),
+  password: string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  confirmPassword: string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem.",
+  path: ["confirmPassword"]
 });
 
 export default passwordValidationSchema;
