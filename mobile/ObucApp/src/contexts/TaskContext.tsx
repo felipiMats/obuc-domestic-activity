@@ -49,6 +49,9 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
   }
 
   async function fetchTasks(status?: string) {
+    if (user?.id == undefined) {
+      return;
+    }
     try {
       setIsLoadingTasks(true);
       const response = await api.get('/tasks', { params: { status } });

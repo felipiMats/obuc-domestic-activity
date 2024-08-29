@@ -25,7 +25,6 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   async function userAndTokenUpdate(userData: UserDTO, token: string) {
     try {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      console.info('Token', token)
       setUser(userData)
     } catch (error) {
       throw error;
